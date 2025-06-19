@@ -1,6 +1,6 @@
 # Projeto - CodeSmellRefactorSoftwareQuality
 
-## Estrutura dos Projetos
+## Estrutura do Projeto
 
 - ``src/``: Código-fonte do projeto.
 - ``rules.xml``: Regras do PMD utilizadas para identificar code smells.
