@@ -73,7 +73,12 @@ public class TodoTracker {
     }
 
     public Integer addToDo(String title, String description, Integer priority) {
-        ToDo toAdd = new ToDo(nextId, title, description, priority);
+        ToDo toAdd = new ToDo.Builder()
+                .id(nextId)
+                .title(title)
+                .description(description)
+                .priority(priority)
+                .build();
         nextId++;
         this.toDos.add(toAdd);
         return toAdd.getId();
