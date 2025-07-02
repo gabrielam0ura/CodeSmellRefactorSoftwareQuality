@@ -29,28 +29,33 @@ public class TodoTracker {
     public String toString() {
         StringBuilder str = new StringBuilder();
         for (ToDo toDo : toDos) {
-            String todoInfo = toDo.toString();
-            str.append(todoInfo);
-            str.append("\n");
-            Integer id = toDo.getId();
-            List<LocalDateTime> todosDate = this.tracker.get(id);
-            if(todosDate == null){
-                str.append("No tracks found\n");
-            }else{
-                for (LocalDateTime ldt : todosDate) {
-                    String pattern = "yyyy-MM-dd HH:mm:ss";
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                    String formattedDate = formatter.format(ldt);
-                    str.append(formattedDate);
-                    str.append("\n");
-                }
-            }
+            str.append(formatToDoWithTimestamps(toDo));
         }
         String response = str.toString();
-        if(response.isEmpty()){
-            return "No ToDos found";
+        return response.isEmpty() ? "No ToDos found" : response;
+    }
+
+    private String formatToDoWithTimestamps(ToDo toDo) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(toDo.toString()).append("\n");
+
+        List<LocalDateTime> todosDate = tracker.get(toDo.getId());
+        if (todosDate == null) {
+            builder.append("No tracks found\n");
+        } else {
+            builder.append(formatTimestamps(todosDate));
         }
-        return response;
+
+        return builder.toString();
+    }
+
+    private String formatTimestamps(List<LocalDateTime> timestamps) {
+        StringBuilder builder = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (LocalDateTime ldt : timestamps) {
+            builder.append(formatter.format(ldt)).append("\n");
+        }
+        return builder.toString();
     }
 
     public void addToDoExecutionTime(Integer id){
