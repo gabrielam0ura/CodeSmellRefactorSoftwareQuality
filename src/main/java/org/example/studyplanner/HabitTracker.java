@@ -69,6 +69,24 @@ public class HabitTracker {
         return addHabit(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded);
     }
 
+    public String getFormattedHabitSummary(Habit habit) {
+        StringBuilder response = new StringBuilder();
+        response.append("[ Habit: ")
+                .append(habit.getName())
+                .append(". Records: ");
+
+        List<LocalDateTime> records = getHabitRecords(habit.getId());
+        for (LocalDateTime record : records) {
+            response.append(formatHabitDate(record)).append(", ");
+        }
+
+        if (!records.isEmpty()) {
+            response.setLength(response.length() - 2); // remove trailing comma and space
+        }
+
+        response.append("]\n");
+        return response.toString();
+    }
 
     public int addHabit(String name, String motivation) {
 
@@ -96,6 +114,18 @@ public class HabitTracker {
         this.habits.removeIf(habit -> habit.getId().equals(id));
         this.tracker.remove(id);
     }
+
+    public String getTimelineView() {
+        StringBuilder response = new StringBuilder();
+
+        for (Habit habit : this.habits) {
+            List<LocalDateTime> records = this.getHabitRecords(habit.getId());
+            response.append(habit.formatWithRecords(records, this::formatHabitDate));
+        }
+
+        return response.toString();
+    }
+
 
     public List<LocalDateTime> getHabitRecords(Integer id) {
         return this.tracker.get(id);

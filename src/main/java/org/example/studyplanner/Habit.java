@@ -4,6 +4,8 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.function.Function;
 
 public class Habit implements PlannerMaterial{
     private Integer id;
@@ -27,6 +29,24 @@ public class Habit implements PlannerMaterial{
         this.id = id;
         this.name = name;
         this.motivation = motivation;
+    }
+
+    public String formatWithRecords(List<LocalDateTime> records, Function<LocalDateTime, String> dateFormatter) {
+        StringBuilder response = new StringBuilder();
+        response.append("[ Habit: ")
+                .append(this.name)
+                .append(". Records: ");
+
+        for (LocalDateTime record : records) {
+            response.append(dateFormatter.apply(record)).append(", ");
+        }
+
+        if (!records.isEmpty()) {
+            response.setLength(response.length() - 2); // remove ", "
+        }
+
+        response.append("]\n");
+        return response.toString();
     }
 
     @Override
