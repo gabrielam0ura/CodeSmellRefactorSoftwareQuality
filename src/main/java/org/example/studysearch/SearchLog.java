@@ -6,56 +6,45 @@ import java.util.List;
 import java.util.Map;
 
 public class SearchLog {
+    private String logName;
     private List<String> searchHistory;
     private Map<String, Integer> searchCount;
     private boolean isLocked;
-    private Integer numUsages;
-    private String logName;
+    private int numUsages;
 
     public SearchLog(String logName) {
-        searchHistory = new ArrayList<>();
-        searchCount = new HashMap<>();
         this.logName = logName;
-        numUsages = 0;
-        isLocked = false;
-    }
-    public void addSearchHistory(String searchHistory) {
-        this.searchHistory.add(searchHistory);
-    }
-    public List<String> getSearchHistory() {
-        return searchHistory;
-    }
-    public void setSearchHistory(List<String> searchHistory) {
-        this.searchHistory = searchHistory;
-    }
-    public Map<String, Integer> getSearchCount() {
-        return searchCount;
-    }
-    public void setSearchCount(Map<String, Integer> searchCount) {
-        this.searchCount = searchCount;
+        this.searchHistory = new ArrayList<>();
+        this.searchCount = new HashMap<>();
+        this.isLocked = false;
+        this.numUsages = 0;
     }
 
-    public boolean isLocked() {
-        return isLocked;
+    public void addSearchHistory(String newSearch) {
+        searchHistory.add(newSearch);
     }
 
-    public void setLocked(boolean locked) {
-        isLocked = locked;
+    public void incrementUsage() {
+        numUsages++;
     }
 
-    public Integer getNumUsages() {
-        return numUsages;
+    public void withLock(boolean locked) {
+        this.isLocked = locked;
     }
 
-    public void setNumUsages(Integer numUsages) {
-        this.numUsages = numUsages;
+    public void withSearchCount(Map<String, Integer> newSearchCount) {
+        this.searchCount = newSearchCount;
     }
 
     public String getLogName() {
         return logName;
     }
 
-    public void setLogName(String logName) {
-        this.logName = logName;
+    public List<String> getSearchHistory() {
+        return searchHistory;
+    }
+
+    public int getNumUsages() {
+        return numUsages;
     }
 }
