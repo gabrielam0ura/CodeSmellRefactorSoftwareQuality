@@ -36,6 +36,11 @@ public class SearchLog {
         this.searchCount = newSearchCount;
     }
 
+    public void registerSearch(String text) {
+        addSearchHistory(text);
+        incrementUsage();
+    }
+
     public String getLogName() {
         return logName;
     }

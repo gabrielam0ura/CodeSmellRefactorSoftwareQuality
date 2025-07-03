@@ -16,25 +16,44 @@ public class GeneralSearch implements Search<String> {
 
     @Override
     public List<String> search(String text) {
-        return handleSearch(text);
+        List<String> results = new ArrayList<>();
+        results.addAll(searchCards(text));
+        results.addAll(searchHabits(text));
+        results.addAll(searchTodos(text));
+        results.addAll(searchMaterials(text));
+        results.addAll(searchRegistries(text));
+
+        logSearch(text);
+        results.add("\nLogged in: " + searchLog.getLogName());
+        return results;
     }
 
-    public SearchLog getSearchLog(){
+    public SearchLog getSearchLog() {
         return searchLog;
     }
 
-    private List<String> handleSearch(String text){
-        List<String> results = new ArrayList<>();
-        results.addAll(CardManager.getCardManager().searchInCards(text));
-        results.addAll(HabitTracker.getHabitTracker().searchInHabits(text));
-        results.addAll(TodoTracker.getInstance().searchInTodos(text));
-        results.addAll(StudyMaterial.getStudyMaterial().searchInMaterials(text));
-        results.addAll(StudyTaskManager.getStudyTaskManager().searchInRegistries(text));
+    // 🔽 Métodos auxiliares encapsulam a lógica de cada classe externa
+    private List<String> searchCards(String text) {
+        return CardManager.getCardManager().searchInCards(text);
+    }
 
-        searchLog.addSearchHistory(text);
-        searchLog.incrementUsage();
+    private List<String> searchHabits(String text) {
+        return HabitTracker.getHabitTracker().searchInHabits(text);
+    }
 
-        results.add("\nLogged in: " + searchLog.getLogName());
-        return results;
+    private List<String> searchTodos(String text) {
+        return TodoTracker.getInstance().searchInTodos(text);
+    }
+
+    private List<String> searchMaterials(String text) {
+        return StudyMaterial.getStudyMaterial().searchInMaterials(text);
+    }
+
+    private List<String> searchRegistries(String text) {
+        return StudyTaskManager.getStudyTaskManager().searchInRegistries(text);
+    }
+
+    private void logSearch(String text) {
+        searchLog.registerSearch(text);
     }
 }
