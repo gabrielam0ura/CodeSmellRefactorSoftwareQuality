@@ -52,4 +52,9 @@ public class SearchLog {
     public int getNumUsages() {
         return numUsages;
     }
+
+    public String logSearch(String text) {
+        registerSearch(text);
+        return "\nLogged in: " + getLogName();
+    }
 }

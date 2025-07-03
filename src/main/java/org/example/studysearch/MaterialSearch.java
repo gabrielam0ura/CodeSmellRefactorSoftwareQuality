@@ -24,10 +24,8 @@ public class MaterialSearch implements Search<String> {
         List<String> results = new ArrayList<>();
         results.addAll(StudyMaterial.getStudyMaterial().searchInMaterials(text));
 
-        searchLog.addSearchHistory(text);
-        searchLog.incrementUsage();
+        results.add(searchLog.logSearch(text));
 
-        results.add("\nLogged in: " + searchLog.getLogName());
         return results;
     }
 }
