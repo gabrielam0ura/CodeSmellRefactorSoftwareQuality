@@ -29,4 +29,12 @@ public class Card {
         setQuestion(question);
         setAnswer(answer);
     }
+
+    public boolean isCorrectAnswer(String userAnswer) {
+        return this.answer.equalsIgnoreCase(userAnswer.trim());
+    }
+
+    public String displayCard() {
+        return "Q: " + question + "\nA: " + answer;
+    }
 }

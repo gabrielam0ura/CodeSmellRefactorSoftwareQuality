@@ -6,6 +6,12 @@ public abstract class Registry {
     Integer priority;
     boolean isActive;
 
+    public Registry() {}
+
+    public Registry(String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
