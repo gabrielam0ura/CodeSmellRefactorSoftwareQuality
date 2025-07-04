@@ -53,23 +53,71 @@ public class StudyRegistryController {
         studyTaskManager.addRegistry(task);
     }
 
-    private void handleSetObjective(StudyObjective objective){
-        handleMethodHeader("(Study Objective Edit)");
-        System.out.println("Type the following info: Integer id, Integer priority " +
-                "Integer practicedDays, int day, int month, int year, String name, String title, String description, " +
-                "String topic, String objectiveInOneLine, String objectiveFullDescription, String motivation, " +
-                "Double duration, boolean isActive  \n");
-        objective.handleSetObjective(
-                Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()),
-                getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Double.parseDouble(getInput()),
-                Boolean.parseBoolean(getInput())
+    private Integer readInteger(String fieldName) {
+        System.out.printf("Enter %s (Integer): ", fieldName);
+        return Integer.parseInt(getInput());
+    }
+
+    private int readInt(String fieldName) {
+        System.out.printf("Enter %s (int): ", fieldName);
+        return Integer.parseInt(getInput());
+    }
+
+    private Double readDouble(String fieldName) {
+        System.out.printf("Enter %s (Double): ", fieldName);
+        return Double.parseDouble(getInput());
+    }
+
+    private boolean readBoolean(String fieldName) {
+        System.out.printf("Enter %s (boolean): ", fieldName);
+        return Boolean.parseBoolean(getInput());
+    }
+
+    private String readString(String fieldName) {
+        System.out.printf("Enter %s (String): ", fieldName);
+        return getInput();
+    }
+
+    private StudyObjectiveData readStudyObjectiveDataFromInput() {
+        System.out.println("Type the following info: Integer id, Integer priority, Integer practicedDays, " +
+                "int day, int month, int year, String name, String title, String description, String topic, " +
+                "String objectiveInOneLine, String objectiveFullDescription, String motivation, Double duration, boolean isActive\n");
+
+        Integer[] intFields = readIntFields();
+        String[] stringFields = readStringFields();
+        Double duration = readDouble("duration");
+        boolean isActive = readBoolean("isActive");
+
+        return new StudyObjectiveData(
+                intFields[0], intFields[1], intFields[2],
+                intFields[3], intFields[4], intFields[5],
+                stringFields[0], stringFields[1], stringFields[2], stringFields[3],
+                stringFields[4], stringFields[5], stringFields[6],
+                duration, isActive
         );
+    }
+
+    private Integer[] readIntFields() {
+        return new Integer[]{
+                readInteger("id"),
+                readInteger("priority"),
+                readInteger("practicedDays"),
+                readInt("day"),
+                readInt("month"),
+                readInt("year")
+        };
+    }
+
+    private String[] readStringFields() {
+        return new String[]{
+                readString("name"),
+                readString("title"),
+                readString("description"),
+                readString("topic"),
+                readString("objectiveInOneLine"),
+                readString("objectiveFullDescription"),
+                readString("motivation")
+        };
     }
 
     private StudyObjective getStudyObjectiveInfo(){
@@ -78,7 +126,7 @@ public class StudyRegistryController {
         String title = getInput();
         String description = getInput();
         StudyObjective studyObjective = new StudyObjective(title, description);
-        handleSetObjective(studyObjective);
+        handleSetObjectiveFromInput(studyObjective);
         studyTaskManager.addRegistry(studyObjective);
         return studyObjective;
     }
@@ -197,6 +245,12 @@ public class StudyRegistryController {
     private void handleGetWeekResponsibilities(){
         List<String> responsibilities = studyTaskManager.getWeekResponsibilities();
         System.out.println(String.join(", ", responsibilities));
+    }
+
+    private void handleSetObjectiveFromInput(StudyObjective objective) {
+        handleMethodHeader("(Study Objective Edit)");
+        StudyObjectiveData data = readStudyObjectiveDataFromInput();
+        objective.handleSetObjective(data);
     }
 
     public void handleRegistryInput(){
