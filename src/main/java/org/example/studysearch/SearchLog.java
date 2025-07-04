@@ -20,6 +20,12 @@ public class SearchLog {
         this.numUsages = 0;
     }
 
+    public String getFormattedLog() {
+        String response = getLogName() + " was used: " + getNumUsages() + " times\nSearch Log\n";
+        response += String.join(", ", getSearchHistory());
+        return response;
+    }
+
     public void addSearchHistory(String newSearch) {
         searchHistory.add(newSearch);
     }

@@ -141,17 +141,32 @@ public class StudyRegistryController {
         return plan;
     }
 
-    private void handleSetSteps(StudyPlan studyPlan){
+    private void handleSetSteps(StudyPlan studyPlan) {
         handleMethodHeader("(Study Plan Edit)");
         System.out.println("Type the following info: String firstStep, String resetStudyMechanism, String consistentStep, " +
-                "String seasonalSteps, String basicSteps, String mainObjectiveTitle, String mainGoalTitle, String mainMaterialTopic, " +
-                "String mainTask, @NotNull  Integer numberOfSteps, boolean isImportant. " +
+                "String seasonalSteps, String basicSteps, String mainObjectiveTitle, String mainGoalTitle, " +
+                "String mainMaterialTopic, String mainTask, @NotNull Integer numberOfSteps, boolean isImportant. " +
                 "The Date to start is today, the date to end is x days from now, type the quantity of days\n");
-        LocalDateTime createdAT = LocalDateTime.now();
-        studyPlan.assignSteps(
-                getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Integer.parseInt(getInput()), Boolean.parseBoolean(getInput()), createdAT, createdAT.plusDays(Long.parseLong(getInput()))
-        );
+
+        LocalDateTime createdAt = LocalDateTime.now();
+
+        StudyPlan.StudyStepsParameters params = StudyPlan.StudyStepsParameters.builder()
+                .firstStep(getInput())
+                .resetStudyMechanism(getInput())
+                .consistentStep(getInput())
+                .seasonalSteps(getInput())
+                .basicSteps(getInput())
+                .mainObjectiveTitle(getInput())
+                .mainGoalTitle(getInput())
+                .mainMaterialTopic(getInput())
+                .mainTask(getInput())
+                .numberOfSteps(Integer.parseInt(getInput()))
+                .isImportant(Boolean.parseBoolean(getInput()))
+                .startDate(createdAt)
+                .endDate(createdAt.plusDays(Long.parseLong(getInput())))
+                .build();
+
+        studyPlan.assignSteps(params);
     }
 
     private StudyGoal getStudyGoalInfo(){
