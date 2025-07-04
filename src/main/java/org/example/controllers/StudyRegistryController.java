@@ -245,12 +245,27 @@ public class StudyRegistryController {
         System.out.println("Study Plan Added");
     }
 
-    private void getWeekInfo(){
-        System.out.println("(Study Task Manager Week Set Up) Type the following info: String planName, String objectiveTitle, " +
-                "String objectiveDescription, String materialTopic, String materialFormat, String goal, String reminderTitle, " +
-                "String reminderDescription, String mainTaskTitle, String mainHabit, String mainCardStudy");
-        studyTaskManager.setUpWeek(getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                getInput(), getInput(), getInput());
+    private void getWeekInfo() {
+        System.out.println("(Study Task Manager Week Set Up)\n" +
+                "Type the following info in order:\n" +
+                "1. Plan name\n" +
+                "2. Objective title\n" +
+                "3. Objective description\n" +
+                "4. Material topic\n" +
+                "5. Material format\n" +
+                "6. Goal\n" +
+                "7. Reminder title\n" +
+                "8. Reminder description\n" +
+                "9. Main task title\n" +
+                "10. Main habit\n" +
+                "11. Main card study");
+
+        List<String> inputs = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            inputs.add(getInput());
+        }
+
+        studyTaskManager.handleSetUpWeek(inputs);
     }
 
     private void handleSetUpWeek(){
