@@ -54,19 +54,23 @@ public class HabitTracker {
         return this.tracker.keySet().stream().toList();
     }
 
-    public int addHabit(String name, String motivation, Integer dailyMinutesDedication, Integer dailyHoursDedication, Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer seconds, Boolean isConcluded) {
-        LocalTime lt = LocalTime.of(dailyHoursDedication, dailyMinutesDedication);
-        LocalDateTime startDate = LocalDateTime.of(year, month, day, hour, minute, seconds);
-        Habit habit = new Habit(name, motivation, lt, this.nextId, startDate, isConcluded);
+    public int addHabit(HabitCreationData data) {
+        Habit habit = data.toHabit(this.nextId);
         this.habits.add(habit);
-        int response = nextId;
         this.tracker.put(nextId, new ArrayList<>());
-        this.nextId++;
-        return response;
+        return nextId++;
     }
 
     public int handleAddHabitAdapter(List<String> stringProperties, List<Integer> intProperties, boolean isConcluded){
-        return addHabit(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded);
+        DedicationTime dedication = new DedicationTime(intProperties.get(1), intProperties.get(0));
+        StartDateTime startDateTime = new StartDateTime(
+                intProperties.get(2), intProperties.get(3), intProperties.get(4),
+                intProperties.get(5), intProperties.get(6), intProperties.get(7)
+        );
+        HabitCreationData data = new HabitCreationData(
+                stringProperties.get(0), stringProperties.get(1), dedication, startDateTime, isConcluded
+        );
+        return addHabit(data);
     }
 
     public String getFormattedHabitSummary(Habit habit) {
