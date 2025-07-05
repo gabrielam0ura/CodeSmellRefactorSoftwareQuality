@@ -1,35 +1,22 @@
 package org.example.studysearch;
 
-import org.example.studycards.CardManager;
-import org.example.studyplanner.HabitTracker;
-import org.example.studyplanner.TodoTracker;
-import org.example.studyregistry.StudyTaskManager;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class RegistrySearch implements Search<String>{
-    private SearchLog searchLog = new SearchLog("Registry Search");
-    public RegistrySearch(){}
+public class RegistrySearch implements Search<String> {
+
+    private final SearchLog searchLog = new SearchLog("Registry Search");
+    private final RegistrySearchHandler searchHandler = new RegistrySearchHandler();
 
     @Override
     public List<String> search(String text) {
-        return handleRegistrySearch(text);
+        List<String> results = searchHandler.performSearch(text);
+        searchLog.addSearchHistory(text);
+        searchLog.incrementUsage();
+        results.add("\nLogged in: " + searchLog.getLogName());
+        return results;
     }
 
     public SearchLog getSearchLog() {
         return searchLog;
-    }
-
-    private List<String> handleRegistrySearch(String text){
-        List<String> results = new ArrayList<>();
-        results.addAll(CardManager.getCardManager().searchInCards(text));
-        results.addAll(HabitTracker.getHabitTracker().searchInHabits(text));
-        results.addAll(TodoTracker.getInstance().searchInTodos(text));
-        results.addAll(StudyTaskManager.getStudyTaskManager().searchInRegistries(text));
-        this.searchLog.addSearchHistory(text);
-        this.searchLog.setNumUsages(this.searchLog.getNumUsages() + 1);
-        results.add("\nLogged in: " + this.searchLog.getLogName());
-        return results;
     }
 }

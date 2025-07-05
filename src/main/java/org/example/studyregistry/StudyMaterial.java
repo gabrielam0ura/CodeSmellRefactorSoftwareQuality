@@ -1,4 +1,5 @@
 package org.example.studyregistry;
+
 import org.example.studymaterial.AudioReference;
 import org.example.studymaterial.Reference;
 import org.example.studymaterial.TextReference;
@@ -9,34 +10,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StudyMaterial{
+public class StudyMaterial {
     List<Reference> references;
     private static StudyMaterial studyMaterial;
     private Map<String, Integer> referenceCount;
 
-    private StudyMaterial(){
-        references = new ArrayList<Reference>();
+    private StudyMaterial() {
+        references = new ArrayList<>();
     }
 
-    public static StudyMaterial getStudyMaterial(){
-        if(studyMaterial == null){
+    public static StudyMaterial getStudyMaterial() {
+        if (studyMaterial == null) {
             studyMaterial = new StudyMaterial();
         }
         return studyMaterial;
     }
 
-    public void addReference(Reference ref){
+    public void addReference(Reference ref) {
         references.add(ref);
     }
 
-    List<Reference> getReferences(){
+    List<Reference> getReferences() {
         return references;
     }
 
-    public List<Reference> getTypeReference(Reference type){
+    public List<Reference> getTypeReference(Reference type) {
         List<Reference> response = new ArrayList<>();
-        for(Reference reference : references){
-            if(reference.getClass() == type.getClass()){
+        for (Reference reference : references) {
+            if (reference.getClass() == type.getClass()) {
                 response.add(reference);
             }
         }
@@ -47,40 +48,52 @@ public class StudyMaterial{
         this.referenceCount = referenceCount;
     }
 
-    public List<String> searchInMaterials(String text){
+    public List<String> searchInMaterials(String text) {
         List<String> response = new ArrayList<>();
-        for(Reference reference : references){
-            String mix = (reference.getTitle() != null ? reference.getTitle() : "") + (reference.getDescription() != null ? reference.getDescription() : "");
-            if (mix.toLowerCase().contains(text.toLowerCase())){
+        for (Reference reference : references) {
+            String mix = (reference.getTitle() != null ? reference.getTitle() : "") +
+                    (reference.getDescription() != null ? reference.getDescription() : "");
+            if (mix.toLowerCase().contains(text.toLowerCase())) {
                 response.add(reference.getTitle());
             }
         }
         return response;
     }
 
-    public Map<String, Integer> getReferenceCountMap(){
-        Map<String, Integer> response = new HashMap<>();
-        response.put("Audio References", 0);
-        response.put("Video References", 0);
-        response.put("Text References", 0);
+    public Map<String, Integer> getReferenceCountMap() {
+        Map<String, Integer> response = initializeReferenceMap();
+
         for (Reference reference : references) {
-            if (reference.getClass() == AudioReference.class) {
-                Integer audioCount = response.get("Audio References");
-                response.put("Audio References", audioCount + 1);
-            } else if (reference.getClass() == VideoReference.class) {
-                if(((VideoReference) reference).handleStreamAvailability()){
-                    Integer videoCount = response.get("Video References");
-                    response.put("Video References", videoCount + 1);
-                }
-            } else if (reference.getClass() == TextReference.class){
-                if(((TextReference) reference).handleTextAccess()){
-                    Integer textCount = response.get("Text References");
-                    response.put("Text References", textCount + 1);
-                }
-            }
+            updateReferenceCount(response, reference);
         }
+
         setReferenceCount(response);
         return response;
     }
 
+    private Map<String, Integer> initializeReferenceMap() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("Audio References", 0);
+        map.put("Video References", 0);
+        map.put("Text References", 0);
+        return map;
+    }
+
+    private void updateReferenceCount(Map<String, Integer> map, Reference reference) {
+        if (reference instanceof AudioReference) {
+            incrementCount(map, "Audio References");
+        } else if (reference instanceof VideoReference) {
+            if (((VideoReference) reference).handleStreamAvailability()) {
+                incrementCount(map, "Video References");
+            }
+        } else if (reference instanceof TextReference) {
+            if (((TextReference) reference).handleTextAccess()) {
+                incrementCount(map, "Text References");
+            }
+        }
+    }
+
+    private void incrementCount(Map<String, Integer> map, String key) {
+        map.put(key, map.get(key) + 1);
+    }
 }

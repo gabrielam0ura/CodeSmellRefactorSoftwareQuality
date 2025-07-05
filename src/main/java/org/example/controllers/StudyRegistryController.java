@@ -1,10 +1,12 @@
 package org.example.controllers;
 
+import org.example.studymaterial.AudioEditParamsBuilderFromInput;
 import org.example.studymaterial.AudioReference;
 import org.example.studymaterial.Reference;
 import org.example.studymaterial.TextReference;
 import org.example.studymaterial.VideoReference;
 import org.example.studyregistry.*;
+import org.example.studymaterial.AudioEditParams;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,15 +53,71 @@ public class StudyRegistryController {
         studyTaskManager.addRegistry(task);
     }
 
-    private void handleSetObjective(StudyObjective objective){
-        handleMethodHeader("(Study Objective Edit)");
-        System.out.println("Type the following info: Integer id, Integer priority " +
-                "Integer practicedDays, int day, int month, int year, String name, String title, String description, " +
-                "String topic, String objectiveInOneLine, String objectiveFullDescription, String motivation, " +
-                "Double duration, boolean isActive  \n");
-        objective.handleSetObjective(Integer.parseInt(getInput()), Integer.parseInt(getInput()),Integer.parseInt(getInput()),Integer.parseInt(getInput()),Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Double.parseDouble(getInput()), Boolean.parseBoolean(getInput()));
+    private Integer readInteger(String fieldName) {
+        System.out.printf("Enter %s (Integer): ", fieldName);
+        return Integer.parseInt(getInput());
+    }
+
+    private int readInt(String fieldName) {
+        System.out.printf("Enter %s (int): ", fieldName);
+        return Integer.parseInt(getInput());
+    }
+
+    private Double readDouble(String fieldName) {
+        System.out.printf("Enter %s (Double): ", fieldName);
+        return Double.parseDouble(getInput());
+    }
+
+    private boolean readBoolean(String fieldName) {
+        System.out.printf("Enter %s (boolean): ", fieldName);
+        return Boolean.parseBoolean(getInput());
+    }
+
+    private String readString(String fieldName) {
+        System.out.printf("Enter %s (String): ", fieldName);
+        return getInput();
+    }
+
+    private StudyObjectiveData readStudyObjectiveDataFromInput() {
+        System.out.println("Type the following info: Integer id, Integer priority, Integer practicedDays, " +
+                "int day, int month, int year, String name, String title, String description, String topic, " +
+                "String objectiveInOneLine, String objectiveFullDescription, String motivation, Double duration, boolean isActive\n");
+
+        Integer[] intFields = readIntFields();
+        String[] stringFields = readStringFields();
+        Double duration = readDouble("duration");
+        boolean isActive = readBoolean("isActive");
+
+        return new StudyObjectiveData(
+                intFields[0], intFields[1], intFields[2],
+                intFields[3], intFields[4], intFields[5],
+                stringFields[0], stringFields[1], stringFields[2], stringFields[3],
+                stringFields[4], stringFields[5], stringFields[6],
+                duration, isActive
+        );
+    }
+
+    private Integer[] readIntFields() {
+        return new Integer[]{
+                readInteger("id"),
+                readInteger("priority"),
+                readInteger("practicedDays"),
+                readInt("day"),
+                readInt("month"),
+                readInt("year")
+        };
+    }
+
+    private String[] readStringFields() {
+        return new String[]{
+                readString("name"),
+                readString("title"),
+                readString("description"),
+                readString("topic"),
+                readString("objectiveInOneLine"),
+                readString("objectiveFullDescription"),
+                readString("motivation")
+        };
     }
 
     private StudyObjective getStudyObjectiveInfo(){
@@ -68,7 +126,7 @@ public class StudyRegistryController {
         String title = getInput();
         String description = getInput();
         StudyObjective studyObjective = new StudyObjective(title, description);
-        handleSetObjective(studyObjective);
+        handleSetObjectiveFromInput(studyObjective);
         studyTaskManager.addRegistry(studyObjective);
         return studyObjective;
     }
@@ -83,15 +141,32 @@ public class StudyRegistryController {
         return plan;
     }
 
-    private void handleSetSteps(StudyPlan studyPlan){
+    private void handleSetSteps(StudyPlan studyPlan) {
         handleMethodHeader("(Study Plan Edit)");
         System.out.println("Type the following info: String firstStep, String resetStudyMechanism, String consistentStep, " +
-                "String seasonalSteps, String basicSteps, String mainObjectiveTitle, String mainGoalTitle, String mainMaterialTopic, " +
-                "String mainTask, @NotNull  Integer numberOfSteps, boolean isImportant. " +
+                "String seasonalSteps, String basicSteps, String mainObjectiveTitle, String mainGoalTitle, " +
+                "String mainMaterialTopic, String mainTask, @NotNull Integer numberOfSteps, boolean isImportant. " +
                 "The Date to start is today, the date to end is x days from now, type the quantity of days\n");
-        LocalDateTime createdAT = LocalDateTime.now();
-        studyPlan.assignSteps(getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Integer.parseInt(getInput()), Boolean.parseBoolean(getInput()), createdAT, createdAT.plusDays(Long.parseLong(getInput())));
+
+        LocalDateTime createdAt = LocalDateTime.now();
+
+        StudyPlan.StudyStepsParameters params = StudyPlan.StudyStepsParameters.builder()
+                .firstStep(getInput())
+                .resetStudyMechanism(getInput())
+                .consistentStep(getInput())
+                .seasonalSteps(getInput())
+                .basicSteps(getInput())
+                .mainObjectiveTitle(getInput())
+                .mainGoalTitle(getInput())
+                .mainMaterialTopic(getInput())
+                .mainTask(getInput())
+                .numberOfSteps(Integer.parseInt(getInput()))
+                .isImportant(Boolean.parseBoolean(getInput()))
+                .startDate(createdAt)
+                .endDate(createdAt.plusDays(Long.parseLong(getInput())))
+                .build();
+
+        studyPlan.assignSteps(params);
     }
 
     private StudyGoal getStudyGoalInfo(){
@@ -109,14 +184,14 @@ public class StudyRegistryController {
         studyTaskManager.addRegistry(goal);
     }
 
+    private AudioEditParams collectAudioEditParamsFromInput() {
+        return new AudioEditParamsBuilderFromInput().build();
+    }
+
     private void editAudio(AudioReference audioReference){
         handleMethodHeader("(Audio Edit)");
-        System.out.println("Type the following info:  AudioReference. AudioQuality audioQuality, boolean isDownloadable, " +
-                "String title, String description, String link, String accessRights, String license, String language, int rating, " +
-                "int viewCount, int shareCount \n");
-        AudioReference.AudioQuality quality =AudioReference.audioQualityAdapter(getInput());
-        audioReference.editAudio(quality, Boolean.parseBoolean(getInput()), getInput(), getInput(), getInput(), getInput(),
-                getInput(), getInput(), Integer.parseInt(getInput()), Integer.parseInt(getInput()), Integer.parseInt(getInput()));
+        AudioEditParams params = collectAudioEditParamsFromInput();
+        audioReference.editAudio(params);
     }
 
     private AudioReference addAudioReference(){
@@ -170,12 +245,27 @@ public class StudyRegistryController {
         System.out.println("Study Plan Added");
     }
 
-    private void getWeekInfo(){
-        System.out.println("(Study Task Manager Week Set Up) Type the following info: String planName, String objectiveTitle, " +
-                "String objectiveDescription, String materialTopic, String materialFormat, String goal, String reminderTitle, " +
-                "String reminderDescription, String mainTaskTitle, String mainHabit, String mainCardStudy");
-        studyTaskManager.setUpWeek(getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                getInput(), getInput(), getInput());
+    private void getWeekInfo() {
+        System.out.println("(Study Task Manager Week Set Up)\n" +
+                "Type the following info in order:\n" +
+                "1. Plan name\n" +
+                "2. Objective title\n" +
+                "3. Objective description\n" +
+                "4. Material topic\n" +
+                "5. Material format\n" +
+                "6. Goal\n" +
+                "7. Reminder title\n" +
+                "8. Reminder description\n" +
+                "9. Main task title\n" +
+                "10. Main habit\n" +
+                "11. Main card study");
+
+        List<String> inputs = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            inputs.add(getInput());
+        }
+
+        studyTaskManager.handleSetUpWeek(inputs);
     }
 
     private void handleSetUpWeek(){
@@ -185,6 +275,12 @@ public class StudyRegistryController {
     private void handleGetWeekResponsibilities(){
         List<String> responsibilities = studyTaskManager.getWeekResponsibilities();
         System.out.println(String.join(", ", responsibilities));
+    }
+
+    private void handleSetObjectiveFromInput(StudyObjective objective) {
+        handleMethodHeader("(Study Objective Edit)");
+        StudyObjectiveData data = readStudyObjectiveDataFromInput();
+        objective.handleSetObjective(data);
     }
 
     public void handleRegistryInput(){

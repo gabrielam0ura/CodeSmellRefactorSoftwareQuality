@@ -66,28 +66,21 @@ public class StudySearchController {
         System.out.println(String.join(", ", response));
     }
 
-    private void handleGetGeneralSearchLog(){
+    private void printSearchLog(SearchLog log){
         handleMethodHeader("(Get Search Log)");
-        SearchLog generalLog = generalSearch.getSearchLog();
-        String response = generalLog.getLogName() + " was used: " + generalLog.getNumUsages() + " times\nSearch Log\n";
-        response += String.join(", ", generalLog.getSearchHistory());
-        System.out.println(response);
+        System.out.println(log.getFormattedLog());
+    }
+
+    private void handleGetGeneralSearchLog(){
+        printSearchLog(generalSearch.getSearchLog());
     }
 
     private void handleGetMaterialSearchLog(){
-        handleMethodHeader("(Get Search Log)");
-        SearchLog materialLog = materialSearch.getSearchLog();
-        String response = materialLog.getLogName() + " was used: " + materialLog.getNumUsages() + " times\nSearch Log\n";
-        response += String.join(", ", materialLog.getSearchHistory());
-        System.out.println(response);
+        printSearchLog(materialSearch.getSearchLog());
     }
 
     private void handleGetRegistrySearchLog(){
-        handleMethodHeader("(Get Search Log)");
-        SearchLog registryLog = registrySearch.getSearchLog();
-        String response = registryLog.getLogName() + " was used: " + registryLog.getNumUsages() + " times\nSearch Log\n";
-        response += String.join(", ", registryLog.getSearchHistory());
-        System.out.println(response);
+        printSearchLog(registrySearch.getSearchLog());
     }
 
     public void handleSearchInput(){
